@@ -1,4 +1,3 @@
-
 const { useState } = React;
 
 function SudokuIgniter() {
@@ -7,108 +6,100 @@ function SudokuIgniter() {
   const [selectedNumber, setSelectedNumber] = useState(null);
   const [view, setView] = useState("menu");
 
-  const handleCellClick = (row, col) => {
-    if (selectedNumber !== null) {
-      const updated = grid.map((r) => r.slice());
-      updated[row][col] = selectedNumber;
-      setGrid(updated);
+  const handleCellClick = (r, c) => {
+    if (selectedNumber != null) {
+      const g = grid.map(row => [...row]);
+      g[r][c] = selectedNumber;
+      setGrid(g);
     }
   };
 
-  const handleClearCell = (row, col) => {
-    const updated = grid.map((r) => r.slice());
-    updated[row][col] = null;
-    setGrid(updated);
+  const handleClear = (r, c) => {
+    const g = grid.map(row => [...row]);
+    g[r][c] = null;
+    setGrid(g);
   };
 
-  const renderMenu = () => (
+  const Menu = () => (
     <div className="text-center p-6">
       <h1 className="text-4xl font-bold mb-8">Sudoku Igniter</h1>
-      <div className="flex flex-col gap-4 items-center">
-        <button onClick={() => setView("howToPlay")} className="px-4 py-2 bg-blue-500 text-white rounded">1. How to Play</button>
-        <button onClick={() => setView("scoreCard")} className="px-4 py-2 bg-green-500 text-white rounded">2. Score Card</button>
-        <button onClick={() => setView("roughPad")} className="px-4 py-2 bg-yellow-500 text-white rounded">3. Rough Sudoku</button>
-        <button onClick={() => setView("levels")} className="px-4 py-2 bg-purple-500 text-white rounded">4. Levels</button>
-      </div>
-    </div>
-  );
-
-  const renderHowToPlay = () => (
-    <div className="p-6 text-center">
-      <h2 className="text-2xl font-bold mb-4">How to Play</h2>
-      <p className="text-gray-700">Click a cell, select a number from the pad below, and it fills in. Right-click to erase. Use this to practice and enjoy Sudoku!</p>
-      <button onClick={() => setView("menu")} className="mt-6 px-4 py-2 bg-gray-300 rounded">Back to Menu</button>
-    </div>
-  );
-
-  const renderScoreCard = () => (
-    <div className="p-6 text-center">
-      <h2 className="text-2xl font-bold mb-4">Score Card</h2>
-      <p className="text-gray-500">Score tracking will be added soon. Stay tuned!</p>
-      <button onClick={() => setView("menu")} className="mt-6 px-4 py-2 bg-gray-300 rounded">Back to Menu</button>
-    </div>
-  );
-
-  const renderRoughPad = () => (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold text-center mb-4">Rough Sudoku Pad</h2>
-      <div className="grid grid-cols-9 gap-1 max-w-[36rem] mx-auto">
-        {grid.map((row, rowIndex) =>
-          row.map((cell, colIndex) => (
-            <div
-              key={`${rowIndex}-${colIndex}`}
-              onClick={() => handleCellClick(rowIndex, colIndex)}
-              onContextMenu={(e) => {
-                e.preventDefault();
-                handleClearCell(rowIndex, colIndex);
-              }}
-              className="w-10 h-10 flex items-center justify-center border border-gray-400 bg-white cursor-pointer text-lg"
-            >
-              {cell !== null ? cell : ""}
-            </div>
-          ))
-        )}
-      </div>
-      <div className="flex justify-center mt-6 gap-2 flex-wrap">
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+      <div className="space-y-4">
+        {["howToPlay", "scoreCard", "roughPad", "levels"].map((id, i) => (
           <button
-            key={num}
-            onClick={() => setSelectedNumber(num)}
-            className={\`w-10 h-10 border border-gray-500 rounded-full flex items-center justify-center \${selectedNumber === num ? "bg-blue-500 text-white" : "bg-white"}\`}
+            key={id}
+            onClick={() => setView(id)}
+            className="w-full max-w-xs px-4 py-2 bg-blue-500 text-white rounded"
           >
-            {num}
+            {i + 1}. {id.replace(/([A-Z])/g, ' $1')}
           </button>
         ))}
-        <button
-          onClick={() => setSelectedNumber(null)}
-          className="ml-4 px-3 py-1 border rounded bg-red-200"
-        >
-          Erase
-        </button>
-      </div>
-      <div className="text-center mt-6">
-        <button onClick={() => setView("menu")} className="mt-4 px-4 py-2 bg-gray-300 rounded">Back to Menu</button>
       </div>
     </div>
   );
 
-  const renderLevels = () => (
-    <div className="p-6 text-center">
+  const HowToPlay = () => (
+    <div className="text-center p-6">
+      <h2 className="text-2xl font-bold mb-4">How to Play</h2>
+      <p>Click a cell → select number below → fill. Right-click clears.</p>
+      <button onClick={() => setView("menu")} className="mt-4 px-4 py-2 bg-gray-300 rounded">Back</button>
+    </div>
+  );
+
+  const ScoreCard = () => (
+    <div className="text-center p-6">
+      <h2 className="text-2xl font-bold mb-4">Score Card</h2>
+      <p>Coming soon!</p>
+      <button onClick={() => setView("menu")} className="mt-4 px-4 py-2 bg-gray-300 rounded">Back</button>
+    </div>
+  );
+
+  const RoughPad = () => (
+    <div className="p-4">
+      <h2 className="text-2xl font-bold text-center mb-4">Rough Sudoku</h2>
+      <div className="grid grid-cols-9 gap-1 max-w-md mx-auto">
+        {grid.map((row, r) => row.map((cell, c) => (
+          <div
+            key={`${r}-${c}`}
+            onClick={() => handleCellClick(r, c)}
+            onContextMenu={(e) => { e.preventDefault(); handleClear(r, c); }}
+            className="w-10 h-10 flex items-center justify-center border bg-white cursor-pointer"
+          >
+            {cell ?? ""}
+          </div>
+        )))}
+      </div>
+      <div className="flex flex-wrap justify-center mt-4 gap-2">
+        {Array.from({ length: 9 }, (_, i) => (
+          <button
+            key={i + 1}
+            onClick={() => setSelectedNumber(i + 1)}
+            className={`w-10 h-10 border rounded flex items-center justify-center ${
+              selectedNumber === i + 1 ? "bg-blue-500 text-white" : "bg-white"
+            }`}
+          >
+            {i + 1}
+          </button>
+        ))}
+        <button onClick={() => setSelectedNumber(null)} className="px-3 py-1 border rounded bg-red-200">Erase</button>
+      </div>
+      <div className="text-center mt-4">
+        <button onClick={() => setView("menu")} className="px-4 py-2 bg-gray-300 rounded">Back</button>
+      </div>
+    </div>
+  );
+
+  const Levels = () => (
+    <div className="text-center p-6">
       <h2 className="text-2xl font-bold mb-4">Levels</h2>
-      <p className="text-gray-500">Levels feature coming soon with Easy, Medium, and Hard boards.</p>
-      <button onClick={() => setView("menu")} className="mt-6 px-4 py-2 bg-gray-300 rounded">Back to Menu</button>
+      <p>Easy / Medium / Hard coming soon!</p>
+      <button onClick={() => setView("menu")} className="mt-4 px-4 py-2 bg-gray-300 rounded">Back</button>
     </div>
   );
 
-  return (
-    <div className="min-h-screen bg-gray-100">
-      {view === "menu" && renderMenu()}
-      {view === "howToPlay" && renderHowToPlay()}
-      {view === "scoreCard" && renderScoreCard()}
-      {view === "roughPad" && renderRoughPad()}
-      {view === "levels" && renderLevels()}
-    </div>
-  );
+  const views = { menu: Menu, howToPlay: HowToPlay, scoreCard: ScoreCard, roughPad: RoughPad, levels: Levels };
+  const ViewComp = views[view] || Menu;
+
+  return <div className="min-h-screen bg-gray-100"><ViewComp /></div>;
 }
 
-ReactDOM.render(<SudokuIgniter />, document.getElementById("root"));
+ReactDOM.createRoot(document.getElementById("root")).render(<SudokuIgniter />);
